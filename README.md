@@ -16,3 +16,4 @@ If a player reaches 18 clicks before 8 seconds have passed, they must wait until
 If no player reaches 20 clicks within 10 seconds, the game ends in a draw, and the wager is returned.
 The winner receives double the wagered amount in the chosen currency.
 The game now supports wagering with either SOL or $CLICK, giving players more flexibility in how they want to play. The core gameplay mechanics remain the same, but players can now choose which currency they want to use for their wagers.
+![Screen Shot 2025-01-07 at 11 20 47 PM](https://github.com/user-attachments/assets/a25753d7-4bcd-459f-8c0c-5ea669794dff)
