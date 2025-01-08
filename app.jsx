@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 function App() {
-  const [balance, setBalance] = useState(0);
-  const [wager, setWager] = useState(1);
+  const [solBalance, setSolBalance] = useState(0);
+  const [clickBalance, setClickBalance] = useState(0);
+  const [wagerAmount, setWagerAmount] = useState(1);
+  const [wagerCurrency, setWagerCurrency] = useState('SOL');
   const [timeLeft, setTimeLeft] = useState(10);
   const [gameActive, setGameActive] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
@@ -18,7 +20,7 @@ function App() {
     if (gameActive && timeLeft > 0) {
       timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
-        if (timeLeft === 3) { // Enable clicking after 8 seconds (when 2 seconds are left)
+        if (timeLeft === 3) {
           setPlayer1Disabled(false);
           setPlayer2Disabled(false);
         }
@@ -43,13 +45,20 @@ function App() {
     const simulatedPublicKey = 'SimulatedPhantom' + Math.random().toString(36).substring(2, 15);
     setPublicKey(simulatedPublicKey);
     setWalletConnected(true);
-    const simulatedBalance = Math.floor(Math.random() * 100) + 10;
-    setBalance(simulatedBalance);
+    const simulatedSolBalance = Math.floor(Math.random() * 100) + 10;
+    const simulatedClickBalance = Math.floor(Math.random() * 1000) + 100;
+    setSolBalance(simulatedSolBalance);
+    setClickBalance(simulatedClickBalance);
   };
 
   const startGame = () => {
-    if (balance >= wager) {
-      setBalance(balance - wager);
+    const currentBalance = wagerCurrency === 'SOL' ? solBalance : clickBalance;
+    if (currentBalance >= wagerAmount) {
+      if (wagerCurrency === 'SOL') {
+        setSolBalance(solBalance - wagerAmount);
+      } else {
+        setClickBalance(clickBalance - wagerAmount);
+      }
       setGameActive(true);
       setTimeLeft(10);
       setPlayer1Clicks(0);
@@ -58,19 +67,27 @@ function App() {
       setPlayer1Disabled(false);
       setPlayer2Disabled(false);
     } else {
-      alert("Not enough SOL to wager!");
+      alert(`Not enough ${wagerCurrency} to wager!`);
     }
   };
 
   const endGame = () => {
     setGameActive(false);
     if (winner) {
-      const winnings = wager * 2;
-      setBalance(balance + winnings);
-      alert(`${winner} won ${winnings} SOL!`);
+      const winnings = wagerAmount * 2;
+      if (wagerCurrency === 'SOL') {
+        setSolBalance(solBalance + winnings);
+      } else {
+        setClickBalance(clickBalance + winnings);
+      }
+      alert(`${winner} won ${winnings} ${wagerCurrency}!`);
     } else {
       alert("No winner. The wager has been returned.");
-      setBalance(balance + wager);
+      if (wagerCurrency === 'SOL') {
+        setSolBalance(solBalance + wagerAmount);
+      } else {
+        setClickBalance(clickBalance + wagerAmount);
+      }
     }
   };
 
@@ -96,21 +113,30 @@ function App() {
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h1>Two-Player SOL Clicker</h1>
+      <h1>Two-Player SOL/CLICK Clicker</h1>
       {!walletConnected ? (
         <button onClick={connectWallet}>Connect Phantom Wallet</button>
       ) : (
         <>
           <p>Connected: {publicKey}</p>
-          <p>Balance: {balance} SOL</p>
-          <p>Wager: 
+          <p>SOL Balance: {solBalance} SOL</p>
+          <p>CLICK Balance: {clickBalance} CLICK</p>
+          <p>
+            Wager: 
             <input 
               type="number" 
-              value={wager} 
-              onChange={(e) => setWager(Math.max(1, parseInt(e.target.value)))}
+              value={wagerAmount} 
+              onChange={(e) => setWagerAmount(Math.max(1, parseInt(e.target.value)))}
               min="1"
-              max={balance}
-            /> SOL
+              max={wagerCurrency === 'SOL' ? solBalance : clickBalance}
+            />
+            <select 
+              value={wagerCurrency} 
+              onChange={(e) => setWagerCurrency(e.target.value)}
+            >
+              <option value="SOL">SOL</option>
+              <option value="CLICK">CLICK</option>
+            </select>
           </p>
           {!gameActive ? (
             <button onClick={startGame}>Start Game</button>
