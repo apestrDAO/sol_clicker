@@ -27,4 +27,4 @@ You should see your wager appear in the list below
 Try submitting multiple wagers and see how the list and highest wager update
 Wait for the countdown to reset and observe the wagers being cleared
 
-![Screen Shot 2025-01-07 at 11 20 47 PM](https://github.com/user-attachments/assets/a25753d7-4bcd-459f-8c0c-5ea669794dff)
+![Screen Shot 2025-01-09 at 10 30 05 PM](https://github.com/user-attachments/assets/f1e8fbad-a988-40cf-9d42-bfb1e0d0a732)
