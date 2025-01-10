@@ -1,150 +1,107 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { PublicKey } from '@solana/web3.js';
+import React, { useState, useEffect } from 'react';
+import Lobby from './components/Lobby';
+import Game from './components/Game';
+import WalletSelector from './components/WalletSelector';
+import LobbyNavigation from './components/LobbyNavigation';
+import './App.css';
 
-const CLICK_TOKEN_ADDRESS = new PublicKey('5SstYYuiJPiBYBuWZHJipjtv2JUvXSahWG3wuUiapump');
+const App = () => {
+  const [connected, setConnected] = useState(false);
+  const [wallet, setWallet] = useState(null);
+  const [lobby, setLobby] = useState(null);
+  const [game, setGame] = useState(null);
+  const [currentLobbyIndex, setCurrentLobbyIndex] = useState(0);
 
-function App() {
-  const [wagerAmount, setWagerAmount] = useState(0.01);
-  const [wagerType, setWagerType] = useState('SOL');
-  const [isWaiting, setIsWaiting] = useState(false);
-  const [gameState, setGameState] = useState('idle');
-  const [player1Clicks, setPlayer1Clicks] = useState(0);
-  const [player2Clicks, setPlayer2Clicks] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(10);
-  const [isConnected, setIsConnected] = useState(false);
-  const [balance, setBalance] = useState(1); // Initial balance for demonstration
+  const lobbies = [
+    { id: 1, name: '0.01 SOL Lobby' },
+    { id: 2, name: '0.1 SOL Lobby' },
+    { id: 3, name: 'High Stakes Lobby' },
+  ];
 
-  const handleConnect = () => {
-    setIsConnected(true);
+  const connectWallet = (selectedWallet) => {
+    // Simulate a wallet balance
+    const mockBalance = (Math.random() * 10).toFixed(2);
+    setWallet({ ...selectedWallet, balance: mockBalance });
+    setConnected(true);
   };
 
-  const handleWager = () => {
-    if (balance < wagerAmount) {
-      alert("Insufficient balance!");
-      return;
-    }
-    setIsWaiting(true);
-    // Simulate waiting for an opponent
-    setTimeout(() => {
-      setIsWaiting(false);
-      startGame();
-    }, 2000);
+  const disconnectWallet = () => {
+    setWallet(null);
+    setConnected(false);
+    setLobby(null);
+    setGame(null);
+    setCurrentLobbyIndex(0);
   };
 
-  const startGame = useCallback(() => {
-    setGameState('playing');
-    setPlayer1Clicks(0);
-    setPlayer2Clicks(0);
-    setTimeLeft(10);
-  }, []);
-
-  const handlePlayer1Click = () => {
-    if (gameState === 'playing') {
-      if (player1Clicks < 18 || timeLeft <= 2) {
-        setPlayer1Clicks(prev => prev + 1);
-      }
-    }
+  const joinLobby = (lobbyId) => {
+    setLobby(lobbyId);
   };
 
-  useEffect(() => {
-    if (gameState === 'playing') {
-      const timer = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            setGameState('finished');
-            return 0;
-          }
-          return prev - 1;
-        });
+  const leaveLobby = () => {
+    setLobby(null);
+    setGame(null);
+  };
 
-        // Simulate player 2 clicks
-        if (Math.random() > 0.5) {
-          setPlayer2Clicks(prev => (prev < 18 || timeLeft <= 2 ? prev + 1 : prev));
-        }
-      }, 1000);
+  const startGame = (opponent) => {
+    setGame({ opponent });
+  };
 
-      return () => clearInterval(timer);
+  const endGame = () => {
+    setGame(null);
+  };
+
+  const navigateLobby = (direction) => {
+    if (direction === 'back') {
+      setCurrentLobbyIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : lobbies.length - 1));
+    } else if (direction === 'forward') {
+      setCurrentLobbyIndex((prevIndex) => (prevIndex < lobbies.length - 1 ? prevIndex + 1 : 0));
     }
-  }, [gameState, timeLeft]);
-
-  useEffect(() => {
-    if (player1Clicks >= 20 || player2Clicks >= 20) {
-      setGameState('finished');
-    }
-  }, [player1Clicks, player2Clicks]);
-
-  const handlePayout = () => {
-    if (player1Clicks > player2Clicks) {
-      setBalance(prev => prev + wagerAmount);
-      alert(`You won ${wagerAmount} ${wagerType}!`);
-    } else if (player1Clicks < player2Clicks) {
-      setBalance(prev => prev - wagerAmount);
-      alert(`You lost ${wagerAmount} ${wagerType}.`);
-    } else {
-      alert("It's a tie! Your wager has been returned.");
-    }
-    setGameState('idle');
   };
 
   return (
     <div className="App">
-      <h1>Solana Click Game</h1>
-      {!isConnected ? (
-        <button onClick={handleConnect}>Connect Phantom Wallet</button>
+      <h1>SolClicker</h1>
+      {!connected ? (
+        <WalletSelector onConnect={connectWallet} />
       ) : (
-        <>
-          <p>Wallet connected (simulated)</p>
-          <p>Balance: {balance.toFixed(2)} {wagerType}</p>
-          {gameState === 'idle' && (
-            <>
-              <div>
-                <label>
-                  Wager Amount:
-                  <input
-                    type="number"
-                    value={wagerAmount}
-                    onChange={(e) => setWagerAmount(parseFloat(e.target.value))}
-                    min="0.01"
-                    step="0.01"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Wager Type:
-                  <select value={wagerType} onChange={(e) => setWagerType(e.target.value)}>
-                    <option value="SOL">SOL</option>
-                    <option value="CLICK">$CLICK</option>
-                  </select>
-                </label>
-              </div>
-              <button onClick={handleWager} disabled={isWaiting}>
-                {isWaiting ? 'Waiting for opponent...' : 'Place Wager'}
+        <div>
+          <div className="wallet-info">
+            <p>Connected: {wallet.name}</p>
+            <p>Address: {wallet.address}</p>
+            <p>Balance: {wallet.balance} SOL</p>
+            <button onClick={disconnectWallet}>Disconnect</button>
+          </div>
+          {lobby ? (
+            game ? (
+              <Game 
+                game={game} 
+                wallet={wallet} 
+                onEndGame={endGame}
+              />
+            ) : (
+              <Lobby 
+                lobbyId={lobby} 
+                startGame={startGame} 
+                onLeaveLobby={leaveLobby}
+                lobbyName={lobbies.find(l => l.id === lobby).name}
+              />
+            )
+          ) : (
+            <div className="lobby-selection">
+              <LobbyNavigation
+                lobbies={lobbies}
+                currentIndex={currentLobbyIndex}
+                onNavigate={navigateLobby}
+              />
+              <button onClick={() => joinLobby(lobbies[currentLobbyIndex].id)}>
+                Join {lobbies[currentLobbyIndex].name}
               </button>
-            </>
-          )}
-          {gameState === 'playing' && (
-            <div>
-              <h2>Time left: {timeLeft}</h2>
-              <h3>Your clicks: {player1Clicks}</h3>
-              <h3>Opponent clicks: {player2Clicks}</h3>
-              <button onClick={handlePlayer1Click}>Click!</button>
             </div>
           )}
-          {gameState === 'finished' && (
-            <div>
-              <h2>Game Over!</h2>
-              <p>Your clicks: {player1Clicks}</p>
-              <p>Opponent clicks: {player2Clicks}</p>
-              <p>{player1Clicks > player2Clicks ? 'You win!' : player1Clicks < player2Clicks ? 'You lose!' : 'It\'s a tie!'}</p>
-              <button onClick={handlePayout}>Collect Payout</button>
-            </div>
-          )}
-        </>
+        </div>
       )}
     </div>
   );
-}
+};
 
 export default App;
