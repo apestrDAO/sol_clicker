@@ -1,0 +1,149 @@
+.App {
+  text-align: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #1a1a1a;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.wallet-selector {
+  margin-bottom: 20px;
+}
+
+.wallet-list {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.wallet-option {
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #333;
+  color: #fff;
+}
+
+.wallet-option.selected {
+  background-color: #555;
+}
+
+.wallet-info {
+  margin-bottom: 20px;
+  background-color: #000;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.wallet-info p {
+  margin: 5px 0;
+}
+
+.lobby-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.lobby-navigation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.lobby {
+  background-color: #000;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  margin: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+input[type="number"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  background-color: #333;
+  color: #fff;
+}
+
+.game {
+  background-color: #000;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.return-button {
+  background-color: #3498db;
+  margin-bottom: 20px;
+}
+
+.return-button:hover {
+  background-color: #2980b9;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.game p:first-of-type {
+  font-size: 1.2em;
+  font-weight: bold;
+  animation: pulse 1s infinite;
+}
+
+.high-stakes-lobby {
+  margin-top: 20px;
+}
+
+.wager-list {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.wager-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.wager-list li {
+  margin-bottom: 5px;
+}
